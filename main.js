@@ -31,12 +31,63 @@ if (servicesToggle) {
   });
 }
 
-// contact form (static demo, index.html only)
+// contact form (index.html only) - sends via FormSubmit to 25proshield@gmail.com
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
-  contactForm.addEventListener('submit', function (e) {
+  const FORM_ENDPOINT = 'https://formsubmit.co/ajax/25proshield@gmail.com';
+  const successBox = document.getElementById('form-success');
+  const submitBtn = contactForm.querySelector('button[type="submit"]');
+  const btnLabel = submitBtn ? submitBtn.textContent : '';
+
+  // error box (created once, reuses the page's own styles where possible)
+  let errorBox = document.getElementById('form-error');
+  if (!errorBox) {
+    errorBox = document.createElement('div');
+    errorBox.id = 'form-error';
+    errorBox.setAttribute('role', 'alert');
+    errorBox.style.cssText =
+      'display:none;margin-bottom:16px;padding:12px 14px;border-radius:6px;' +
+      'background:#fdecea;color:#8a1f17;font-size:14px;line-height:1.5;';
+    errorBox.innerHTML =
+      'Sorry, we could not send your enquiry. Please call ' +
+      '<a href="tel:07355148892">07355 148892</a> or email ' +
+      '<a href="mailto:25proshield@gmail.com">25proshield@gmail.com</a>.';
+    contactForm.insertBefore(errorBox, contactForm.firstChild);
+  }
+
+  contactForm.addEventListener('submit', async function (e) {
     e.preventDefault();
-    document.getElementById('form-success').classList.add('show');
-    this.reset();
+
+    // honeypot: bots fill it, humans never see it
+    const honey = contactForm.querySelector('input[name="_honey"]');
+    if (honey && honey.value) return;
+
+    errorBox.style.display = 'none';
+    successBox.classList.remove('show');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Sending…';
+    }
+
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new FormData(contactForm)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.success === 'false' || data.success === false) {
+        throw new Error('Send failed');
+      }
+      successBox.classList.add('show');
+      contactForm.reset();
+    } catch (err) {
+      errorBox.style.display = 'block';
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = btnLabel;
+      }
+    }
   });
 }
