@@ -282,21 +282,14 @@
         </div>
       </div>
 
-      <!-- =====================================================
-           FORMULARIO OPERATIVO (FormSubmit)
-           - action/method: respaldo si JS falla (envío directo)
-           - main.js debe interceptar el submit y enviar por fetch a
-             https://formsubmit.co/ajax/25proshield@gmail.com
-           - PRIMER ENVÍO: FormSubmit manda un correo de activación a
-             25proshield@gmail.com -> hay que pulsar "Activate Form".
-           ===================================================== -->
-      <form class="contact-form" id="contactForm" action="https://formsubmit.co/25proshield@gmail.com" method="POST">
-        <!-- Configuración FormSubmit (campos ocultos) -->
-        <input type="hidden" name="_subject" value="New enquiry from the ProShield website">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
-        <!-- Honeypot anti-spam: debe quedar vacío -->
-        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+      <!-- FORMULARIO OPERATIVO (Web3Forms): main.js envía por fetch a https://api.web3forms.com/submit -->
+      <form class="contact-form" id="contactForm" action="https://api.web3forms.com/submit" method="POST">
+        <!-- Web3Forms: pega aquí tu Access Key (te llega por correo al registrar 25proshield@gmail.com) -->
+        <input type="hidden" name="access_key" value="PEGA_AQUI_TU_ACCESS_KEY">
+        <input type="hidden" name="subject" value="New enquiry from the ProShield website">
+        <input type="hidden" name="from_name" value="ProShield Website">
+        <!-- Honeypot anti-spam: debe quedar sin marcar -->
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
 
         <div id="form-success">Thank you &mdash; your enquiry has been received. A member of the ProShield team will be in touch shortly.</div>
         <div class="form-row">
