@@ -31,10 +31,10 @@ if (servicesToggle) {
   });
 }
 
-// contact form (index.html only) - sends via FormSubmit to 25proshield@gmail.com
+// contact form (index.html only) - sends via Web3Forms (access key is in index.html)
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
-  const FORM_ENDPOINT = 'https://formsubmit.co/ajax/25proshield@gmail.com';
+  const FORM_ENDPOINT = 'https://api.web3forms.com/submit';
   const successBox = document.getElementById('form-success');
   const submitBtn = contactForm.querySelector('button[type="submit"]');
   const btnLabel = submitBtn ? submitBtn.textContent : '';
@@ -59,8 +59,8 @@ if (contactForm) {
     e.preventDefault();
 
     // honeypot: bots fill it, humans never see it
-    const honey = contactForm.querySelector('input[name="_honey"]');
-    if (honey && honey.value) return;
+    const honey = contactForm.querySelector('input[name="botcheck"]');
+    if (honey && honey.checked) return;
 
     errorBox.style.display = 'none';
     successBox.classList.remove('show');
@@ -76,7 +76,7 @@ if (contactForm) {
         body: new FormData(contactForm)
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || data.success === 'false' || data.success === false) {
+      if (!res.ok || data.success !== true) {
         throw new Error('Send failed');
       }
       successBox.classList.add('show');
